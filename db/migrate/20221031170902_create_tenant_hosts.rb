@@ -4,7 +4,7 @@ class CreateTenantHosts < ActiveRecord::Migration[7.0]
 
   def change
     create_table :tenant_hosts do |t|
-      t.string :host
+      t.string :host, nil: false
 
       t.timestamps
     end
