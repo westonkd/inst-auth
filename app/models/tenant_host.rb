@@ -1,0 +1,2 @@
+class TenantHost < ApplicationRecord
+end
