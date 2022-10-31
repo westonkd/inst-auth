@@ -1,0 +1,16 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV.fetch("DATABASE_URL") { '' } %> # This is the line we added
+development:
+  <<: *default
+  database: inst_auth_development
+test:
+  <<: *default
+  database: inst_auth_test
+production:
+  <<: *default
+  database: inst_auth_production
+  username: inst_auth
+  password: <%= ENV['INST_AUTH_DATABASE_PASSWORD'] %>

@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  web:
+    ports:
+        - "3000:3000"
+    volumes:
+      - gems:/home/docker/.gem/
+    environment:
+      RAILS_ENV: development
+      RAILS_MAX_THREADS: 5
+      VIRTUAL_HOST: "wdransfield.us-east-1.id.instructure.docker,us-east-1.id.instructure.docker"
+volumes:
+  gems: {}
