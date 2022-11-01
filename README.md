@@ -1,24 +1,7 @@
-# README
+# InstAuth
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Central Ideas
+- Clients only do OAuth2/OIDC with InstAuth
+- InstAuth supports "connections" to authn services and performs the proper authn exchange for whichever connection the user selects
+- Canvas is the first "connection" supported in InstAuth. Connections can then be moved one at a time from Canvas into InstAuth.
+- Each service backing a connection exposes a standard ".well-known" openid-configuration endpoint for discovery of scopes, etc.

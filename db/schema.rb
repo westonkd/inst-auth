@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_31_171923) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_01_184046) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,12 +24,33 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_171923) do
     t.index ["user_id"], name: "index_communication_channels_on_user_id"
   end
 
+  create_table "connections", force: :cascade do |t|
+    t.text "issuer"
+    t.text "authorization_endpoint"
+    t.text "token_endpoint"
+    t.text "userinfo_endpoint"
+    t.text "jwks_uri"
+    t.text "registration_endpoint"
+    t.string "name"
+    t.string "scopes_supported", default: [], array: true
+    t.string "response_types_supported", default: [], array: true
+    t.string "connection_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "tenant_id"
+    t.string "identifier"
+    t.index ["identifier"], name: "index_connections_on_identifier", unique: true
+    t.index ["issuer", "authorization_endpoint"], name: "index_connections_on_issuer_and_authorization_endpoint", unique: true
+    t.index ["tenant_id"], name: "index_connections_on_tenant_id"
+  end
+
   create_table "tenant_hosts", force: :cascade do |t|
     t.string "host"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "tenant_id"
     t.index ["host"], name: "index_tenant_hosts_on_host"
+    t.index ["tenant_id", "host"], name: "index_tenant_hosts_on_tenant_id_and_host", unique: true
   end
 
   create_table "tenant_users", force: :cascade do |t|
@@ -68,6 +89,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_171923) do
     t.index ["sub"], name: "index_users_on_sub"
   end
 
+  add_foreign_key "connections", "tenants"
   add_foreign_key "tenant_users", "tenants"
   add_foreign_key "tenant_users", "users"
 end

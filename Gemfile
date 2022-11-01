@@ -72,3 +72,7 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
+
+gem "oauth2", "~> 2.0"
+
+gem "jwt", "~> 2.5"
