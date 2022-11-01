@@ -11,4 +11,5 @@ class Tenant < ApplicationRecord
 
   belongs_to :regional_tenant, class_name: 'Tenant', optional: true
   has_many :connections
+  has_many :tenant_hosts
 end

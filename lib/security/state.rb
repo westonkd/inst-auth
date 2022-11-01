@@ -2,6 +2,7 @@
 
 module Security::State
   ALGORITHM = 'HS256'
+  COOKIE_TTL_MINUTES = 1
 
   class << self
     def for_connection(connection)
@@ -11,7 +12,7 @@ module Security::State
     private
 
     def payload(connection)
-      { connection_identifier: connection.identifier }
+      { tenant: connection.tenant.regional_tenant.id }
     end
 
     def secret
