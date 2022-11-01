@@ -11,7 +11,7 @@ import {
   TextInput,
 } from "@instructure/ui";
 
-const Authorization = ({ tenant }) => {
+const Authorization = ({ tenant, connections }) => {
   return (
     <InstUISettingsProvider theme={canvas}>
       <Flex height="70vh" justifyItems="center" padding="large">
@@ -46,13 +46,15 @@ const Authorization = ({ tenant }) => {
             </View>
 
             <View display="block" width="300px">
-              <form>
-                <View display="block">
-                  <Button color="secondary" display="block" type="submit">
-                    Sign in with Canvas
-                  </Button>
-                </View>
-              </form>
+              {connections.map((connection) => (
+                  <View display="block" key={connection.identifier}>
+                    <Button color="secondary" display="block" type="submit" onClick={() => {
+                      window.location.replace(connection.authorization_url);
+                    }}>
+                      Sign in with { connection.name }
+                    </Button>
+                  </View>
+              ))}
             </View>
           </Flex.Item>
         </View>

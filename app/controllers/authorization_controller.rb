@@ -8,7 +8,7 @@ class AuthorizationController < ApplicationController
   def authorize_props
     {
       tenant: current_tenant.name,
-      connections: current_tenant.connections
+      connections: Serializers::ConnectionsSerializer.new(current_tenant.connections)
     }
   end
 end
