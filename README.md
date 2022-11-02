@@ -5,3 +5,4 @@
 - InstAuth supports "connections" to authn services and performs the proper authn exchange for whichever connection the user selects
 - Canvas is the first "connection" supported in InstAuth. Connections can then be moved one at a time from Canvas into InstAuth.
 - Each service backing a connection exposes a standard ".well-known" openid-configuration endpoint for discovery of scopes, etc.
+- Callbacks go to a regional tenant, which redirect to a specific tenant based on JWT state contents

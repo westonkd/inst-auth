@@ -76,3 +76,5 @@ end
 gem "oauth2", "~> 2.0"
 
 gem "jwt", "~> 2.5"
+
+gem "httparty", "~> 0.20.0"

@@ -1,7 +1,16 @@
 class Connection < ApplicationRecord
   TYPES = OpenStruct.new({ oauth2: "oauth2" })
 
-  validates :issuer, :authorization_endpoint, :name, :tenant_id, :connection_type, :identifier, presence: true
+  validates(
+    :issuer,
+    :authorization_endpoint,
+    :name,
+    :tenant_id,
+    :connection_type,
+    :identifier,
+    :authorization_host,
+    presence: true
+  )
   validates :authorization_endpoint, uniqueness: { scope: :issuer }
   validates :identifier, uniqueness: true
   validates :connection_type, inclusion: TYPES.to_h.values

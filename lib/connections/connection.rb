@@ -1,16 +1,26 @@
 class Connections::Connection
   class ConnectionNotfound < StandardError; end
 
-  def self.for_connection(connection)
-    connection_map = {
-      Connections::Canvas::IDENTIFIER => Connections::Canvas
-    }
+  class << self
+    def for_connection(connection)
+      connection_map = {
+        Connections::Canvas::IDENTIFIER => Connections::Canvas
+      }
 
-    klass = connection_map[connection.identifier]
+      klass = connection_map[connection.identifier]
 
-    raise(ConnectionNotfound, "No connection found for #{connection.identifier}") if klass.blank?
+      raise(ConnectionNotfound, "No connection found for #{connection.identifier}") if klass.blank?
 
-    klass.new(connection)
+      klass.new(connection)
+    end
+
+    def cookie_value(state)
+      Digest::SHA256.hexdigest state
+    end
+
+    def cookie_name(connection)
+      "#{connection.identifier}_authz_state"
+    end
   end
 
   def initialize(connection)
@@ -21,18 +31,23 @@ class Connections::Connection
     Strategies::Strategy.for(strategy).authorization_endpoint(@connection, parameters: authorization_parameters)
   end
 
+  def token(code, strategy: Strategies::Strategy::TYPES.authorization_code)
+    Strategies::Strategy.for(strategy).access_token(
+      @connection,
+      code,
+      redirect_uri
+    )
+  end
+
   def cookie_name
-    "#{@connection.identifier}_authz_state"
+    self.class.cookie_name(@connection)
   end
 
   def cookie_value
-    Digest::SHA256.hexdigest state
+    self.class.cookie_value state
   end
 
-  def access_token
-  end
-
-  def user
+  def user_from(token)
   end
 
   protected
