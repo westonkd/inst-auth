@@ -23,7 +23,7 @@ module Connections
       # TODO: All the error handling that could occur in this exchange
       connection_helper = Connections::Connection.for_connection(connection_from_state)
       connection_token = connection_helper.token(params[:code])
-      user = connection_helper.user_from(connection_token)
+      user = connection_helper.user_for(connection_token)
 
       render json: user
     end
