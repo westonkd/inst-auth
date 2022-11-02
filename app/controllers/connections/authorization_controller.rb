@@ -1,48 +1,37 @@
 module Connections
   class AuthorizationController < ApplicationController
+    include Connections::Authorize
+    include Connections::Callback
+
     def authorize
       set_state_cookie
-      redirect_to connection.authorization_url, allow_other_host: true
+
+      redirect_to(
+        connection.authorization_url(client_params:),
+        allow_other_host: true
+      )
     end
 
     def callback
       # TODO: handle error response
 
       # Redirect to a specific tenant if needed
-      return redirect_to(tenant_redirect_url, allow_other_host: true) unless params[:redirect_complete]
-
-      connection_from_state = ::Connection.find(decoded_state["#{Security::State::CLAIM_PREFIX}/connection_id"])
+      return redirect_to_target_tenant unless params[:redirect_complete]
 
       # TODO: Actually do a proper OAuth2 error response
-      return head(401) unless Security::State.valid?(
-        connection_from_state,
-        cookies,
-        params[:state]
+      return head(401) unless valid_state_cookie?
+
+      redirect_to(
+        original_callback_url,
+        allow_other_host: true
       )
-
-      # TODO: All the error handling that could occur in this exchange
-      connection_helper = Connections::Connection.for_connection(connection_from_state)
-      connection_token = connection_helper.token(params[:code])
-      user = connection_helper.user_for(connection_token)
-
-      render json: user
     end
 
     private
 
-    def tenant_redirect_url
-      url = URI.parse(connections_callback_path(host: decoded_state['iss']))
-      url.query = URI.encode_www_form(redirect_complete: 1, code: params[:code], state: params[:state])
-      url.to_s
-    end
-
-    def decoded_state
-      @decoded_state ||= Security::State.decoded_jwt(params[:state])
-    end
-
     def set_state_cookie
       cookies[connection.cookie_name] = {
-        value: connection.cookie_value,
+        value: connection.cookie_value(client_params),
         expires: Security::State::COOKIE_TTL_MINUTES.minute.from_now,
         # importantly, set the domain of the cookie to be readable by the
         # regional tenant. This is the tenant that handles the redirect
@@ -57,6 +46,16 @@ module Connections
 
     def connection
       @connection ||= Connections::Connection.for_connection(connection_model)
+    end
+
+    def client_params
+      # TODO: Ya, storing these from the get-go in cache would be nicer
+      {
+        client_state: params[:client_state],
+        client_id: params[:client_id],
+        client_redirecet_uri: params[:client_redirect_uri],
+        client_response_type: params[:client_response_type]
+      }
     end
   end
 end

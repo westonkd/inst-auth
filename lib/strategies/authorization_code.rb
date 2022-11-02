@@ -14,6 +14,30 @@ module Strategies
             redirect_uri:
           ).token
       end
+
+      def redirect_uri(user, state, redirect_uri)
+        url = URI.parse(redirect_uri)
+
+        query = url.query ? CGI.parse(url.query) : {}
+        query.merge!(code: auth_code_for(user), state:)
+        url.query = query.to_param
+
+        url.to_s
+      end
+
+      private
+
+      # TODO: Having the authz code be an JWT may result
+      # in issues with URLs that are too long. This is especially
+      # true when the client uses a long string for state.
+      # Consider storing a mapping of shorter authz codes to user
+      # identifiers in a temporary data store with a short TTL
+      def auth_code_for(user)
+        InstAuth::UserToken.for_user(
+          user,
+          InstAuth::UserToken::PURPOSES.authorization_code
+        )
+      end
     end
   end
 end

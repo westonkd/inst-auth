@@ -10,9 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_02_163532) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_02_180547) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "applications", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.string "client_id"
+    t.string "client_secret"
+    t.string "client_secret_iv"
+    t.string "application_type"
+    t.string "redirect_uris", default: [], array: true
+    t.text "logo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "tenant_id"
+    t.index ["client_id"], name: "index_applications_on_client_id", unique: true
+    t.index ["tenant_id"], name: "index_applications_on_tenant_id"
+  end
 
   create_table "communication_channels", force: :cascade do |t|
     t.string "path"
@@ -87,10 +103,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_163532) do
     t.string "locale"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "tenant_id"
     t.index ["sub"], name: "index_users_on_sub"
+    t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
+  add_foreign_key "applications", "tenants"
   add_foreign_key "connections", "tenants"
   add_foreign_key "tenant_users", "tenants"
   add_foreign_key "tenant_users", "users"
+  add_foreign_key "users", "tenants"
 end

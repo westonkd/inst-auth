@@ -11,7 +11,14 @@ import {
   TextInput,
 } from "@instructure/ui";
 
-const Authorization = ({ tenant, connections }) => {
+const Authorization = ({
+  tenant,
+  connections,
+  client_state,
+  client_id,
+  client_redirect_uri,
+  client_response_type
+}) => {
   return (
     <InstUISettingsProvider theme={canvas}>
       <Flex height="70vh" justifyItems="center" padding="large">
@@ -47,13 +54,20 @@ const Authorization = ({ tenant, connections }) => {
 
             <View display="block" width="300px">
               {connections.map((connection) => (
-                  <View display="block" key={connection.identifier}>
-                    <Button color="secondary" display="block" type="submit" onClick={() => {
-                      window.location.replace(connection.authorization_url);
-                    }}>
-                      Sign in with { connection.name }
-                    </Button>
-                  </View>
+                <View display="block" key={connection.identifier}>
+                  <Button
+                    color="secondary"
+                    display="block"
+                    type="submit"
+                    onClick={() => {
+                      window.location.replace(
+                        `${connection.authorization_url}?client_state=${client_state}&client_id=${client_id}&client_redirect_uri=${client_redirect_uri}&client_response_type=${client_response_type}`
+                      );
+                    }}
+                  >
+                    Sign in with {connection.name}
+                  </Button>
+                </View>
               ))}
             </View>
           </Flex.Item>

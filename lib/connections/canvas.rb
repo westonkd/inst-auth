@@ -28,7 +28,7 @@ module Connections
     end
 
     def user_from_info(userinfo)
-      user = User.find_or_initialize_by(sub: "#{@connection.identifier}|#{userinfo[:uuid]}")
+      user = @connection.tenant.users.find_or_initialize_by(sub: "#{@connection.identifier}|#{userinfo[:uuid]}")
 
       user.update!(
         name: userinfo[:name],

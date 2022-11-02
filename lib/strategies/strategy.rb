@@ -7,7 +7,9 @@ module Strategies
     class << self
       def for(startegy_type)
         {
-          TYPES.authorization_code => AuthorizationCode
+          TYPES.authorization_code => AuthorizationCode,
+          # TODO: store as a constant
+          'code' => AuthorizationCode
         }[startegy_type] || (raise StrategyNotFound, "Could not find strategy for #{startegy_type}")
       end
 

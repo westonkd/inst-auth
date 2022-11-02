@@ -27,8 +27,12 @@ class Connections::Connection
     @connection = connection
   end
 
-  def authorization_url(strategy: Strategies::Strategy::TYPES.authorization_code)
-    Strategies::Strategy.for(strategy).authorization_endpoint(@connection, parameters: authorization_parameters)
+  def authorization_url(strategy: Strategies::Strategy::TYPES.authorization_code, client_params: {})
+    Strategies::Strategy
+      .for(strategy)
+      .authorization_endpoint(
+        @connection, parameters: authorization_parameters(client_params)
+      )
   end
 
   def token(code, strategy: Strategies::Strategy::TYPES.authorization_code)
@@ -43,8 +47,8 @@ class Connections::Connection
     self.class.cookie_name(@connection)
   end
 
-  def cookie_value
-    self.class.cookie_value state
+  def cookie_value(client_params = {})
+    self.class.cookie_value state(client_params)
   end
 
   def user_from(token)
@@ -52,8 +56,8 @@ class Connections::Connection
 
   protected
 
-  def state
-    @state ||= Security::State.for_connection(@connection)
+  def state(client_params)
+    Security::State.for_connection(@connection, client_params)
   end
 
   def redirect_uri
@@ -62,8 +66,8 @@ class Connections::Connection
     )
   end
 
-  def authorization_parameters
-    { state:, redirect_uri: }
+  def authorization_parameters(client_params)
+    { state: state(client_params), redirect_uri: }
   end
 
   def client_id

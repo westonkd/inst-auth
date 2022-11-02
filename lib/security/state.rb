@@ -3,15 +3,15 @@
 module Security::State
   ALGORITHM = 'HS256'
 
-   # TODO: Make a more general JWT module/class
+  # TODO: Make a more general JWT module/class
 
   COOKIE_TTL_MINUTES = 1
   STATE_TTL_MINUTES = 1
   CLAIM_PREFIX = "https://id.instructure.docker"
 
   class << self
-    def for_connection(connection)
-      JWT.encode payload(connection), secret, ALGORITHM
+    def for_connection(connection, client_params = {})
+      JWT.encode payload(connection, client_params), secret, ALGORITHM
     end
 
     def decoded_jwt(token)
@@ -26,16 +26,19 @@ module Security::State
         Connections::Connection.cookie_value(state)
     end
 
-    def payload(connection)
+    def payload(connection, client_params)
       tenant_host = connection.tenant.tenant_hosts.first.host
       regional_tenant_host = connection.tenant.regional_tenant.tenant_hosts.first.host
+
+      puts puts caller[0..3]
 
       {
         iss: tenant_host,
         aud: [tenant_host, regional_tenant_host],
         iat: Time.now.to_i,
         exp: Time.now.to_i + STATE_TTL_MINUTES.minutes.to_i,
-        "#{CLAIM_PREFIX}/connection_id" => connection.id
+        "#{CLAIM_PREFIX}/connection_id" => connection.id,
+        "#{CLAIM_PREFIX}/client_params" => client_params
       }
     end
 

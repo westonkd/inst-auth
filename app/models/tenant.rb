@@ -10,6 +10,9 @@ class Tenant < ApplicationRecord
   end
 
   belongs_to :regional_tenant, class_name: 'Tenant', optional: true
+
   has_many :connections
   has_many :tenant_hosts
+  has_many :users
+  has_many :applications
 end
