@@ -6,7 +6,7 @@ class GrantTypes::GrantType
       return nil if token_params.blank?
 
       klass = {
-        Strategies::Strategy::TYPES.authorization_code => GrantTypes::AuthorizationCode
+        ResponseTypes::ResponseType::TYPES.authorization_code => GrantTypes::AuthorizationCode
       }.with_indifferent_access[token_params[:grant_type]]
 
       raise GrantTypeNotFoundError, "No grant type found for #{token_params[:grant_type]}" if klass.blank?

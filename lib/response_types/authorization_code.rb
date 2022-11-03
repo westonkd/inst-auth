@@ -1,12 +1,12 @@
-module Strategies
+module ResponseTypes
   class AuthorizationCode
     class << self
       def authorization_endpoint(connection, parameters: {})
-        Strategy.client_for_connection(connection).auth_code.authorize_url(parameters)
+        ResponseType.client_for_connection(connection).auth_code.authorize_url(parameters)
       end
 
       def access_token(connection, code, redirect_uri)
-        Strategy
+        ResponseType
           .client_for_connection(connection)
           .auth_code
           .get_token(

@@ -27,16 +27,16 @@ class Connections::Connection
     @connection = connection
   end
 
-  def authorization_url(strategy: Strategies::Strategy::TYPES.authorization_code, client_params: {})
-    Strategies::Strategy
-      .for(strategy)
+  def authorization_url(response_type: ResponseTypes::ResponseType::TYPES.authorization_code, client_params: {})
+    ResponseTypes::ResponseType
+      .for(response_type)
       .authorization_endpoint(
         @connection, parameters: authorization_parameters(client_params)
       )
   end
 
-  def token(code, strategy: Strategies::Strategy::TYPES.authorization_code)
-    Strategies::Strategy.for(strategy).access_token(
+  def token(code, response_type: ResponseTypes::ResponseType::TYPES.authorization_code)
+    ResponseTypes::ResponseType.for(response_type).access_token(
       @connection,
       code,
       redirect_uri

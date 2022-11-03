@@ -1,16 +1,16 @@
-module Strategies
-  class Strategy
-    class StrategyNotFound < StandardError; end
+module ResponseTypes
+  class ResponseType
+    class ResponseTypeNotFound < StandardError; end
 
     TYPES = OpenStruct.new(authorization_code: :authorization_code)
 
     class << self
-      def for(startegy_type)
+      def for(response_type)
         {
           TYPES.authorization_code => AuthorizationCode,
           # TODO: store as a constant
           'code' => AuthorizationCode
-        }.with_indifferent_access[startegy_type] || (raise StrategyNotFound, "Could not find strategy for #{startegy_type}")
+        }.with_indifferent_access[response_type] || (raise ResponseTypeNotFound, "Could not find responste type for #{startegy_type}")
       end
 
       def client_for_connection(connection)
