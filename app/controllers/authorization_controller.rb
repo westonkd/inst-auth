@@ -6,7 +6,7 @@ class AuthorizationController < ApplicationController
     render json: exception, status: 401
   end
 
-  before_action :validate_redirect_uris, :validate_response_type, :validate_scope, only: :authorize
+  before_action :validate_redirect_uri, :validate_response_type, :validate_scope, only: :authorize
 
   def authorize
     render locals: { props: authorize_props }

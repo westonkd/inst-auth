@@ -10,7 +10,7 @@ module Strategies
           TYPES.authorization_code => AuthorizationCode,
           # TODO: store as a constant
           'code' => AuthorizationCode
-        }[startegy_type] || (raise StrategyNotFound, "Could not find strategy for #{startegy_type}")
+        }.with_indifferent_access[startegy_type] || (raise StrategyNotFound, "Could not find strategy for #{startegy_type}")
       end
 
       def client_for_connection(connection)

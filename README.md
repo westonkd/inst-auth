@@ -9,3 +9,8 @@
 - Each tenant allows users to create "Applications," which are credential sets. "Applications" let users select grant types (auth code, pkce, client credentials, etc)
 - Each tenant has a JWKS key set to allow verification of id_tokens they issue
 - Tokens issued by InstAuth are signed (and encrypted) with a secret shared with API Gateway
+
+
+## Notable TODOs
+- Use cache key for client-facing authorization code instead of JWT
+- Fix the terrible naming of modules/classes that 

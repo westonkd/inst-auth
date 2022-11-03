@@ -3,7 +3,7 @@ module Authorization
 
   class AuthorizationError < StandardError; end
 
-  def validate_redirect_uris
+  def validate_redirect_uri
     return if application.redirect_uris.include? params[:redirect_uri]
 
     raise AuthorizationError, "Invalid redirect URI: #{params[:redirect_uri]}"
