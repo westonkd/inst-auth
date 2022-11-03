@@ -45,6 +45,12 @@ module GrantTypes
     end
 
     def id_token
+      # TODO: Build an id token based on what scopes have been granted (oidc, profile, email, etc.)
+
+      InstAuth::UserToken.for_user(
+        @user,
+        InstAuth::UserToken::PURPOSES.id_token
+      )
     end
 
     def client_secret_valid?

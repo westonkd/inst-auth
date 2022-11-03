@@ -2,8 +2,14 @@
 
 module Security
   class KeySet
+    attr_reader :jwk
+
     def initialize(private_key: nil)
-      @jwk = JWT::JWK.import(private_key || default_private_key)
+      @jwk = JWT::JWK.import(
+        private_key || default_private_key,
+        use: :sig,
+        alg: 'RS256'
+      )
     end
 
     def jwks

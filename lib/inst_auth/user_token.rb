@@ -9,10 +9,25 @@ module InstAuth::UserToken
 
   CLAIM_PREFIX = "https://id.instructure.docker"
 
+  KEY_SET = Security::KeySet.new
+
   PURPOSES = OpenStruct.new(
     authorization_code: 'authorization_code',
-    access_token: 'access_token'
+    access_token: 'access_token',
+    id_token: 'id_token'
   )
+
+  SECRETS = {
+    PURPOSES.authorization_code => ENV['SYMMETRIC_TOKEN_SECRET'],
+    PURPOSES.access_token => ENV['SYMMETRIC_TOKEN_SECRET'],
+    PURPOSES.id_token => KEY_SET.signing_key
+  }.freeze
+
+  ALGORITHMS = {
+    PURPOSES.authorization_code => "HS256",
+    PURPOSES.access_token => "HS256",
+    PURPOSES.id_token => "RS256"
+  }.freeze
 
   class TokenPurposeMismatchError < StandardError; end
 
@@ -20,7 +35,12 @@ module InstAuth::UserToken
     def for_user(user, purpose, options = {})
       return nil unless user
 
-      JWT.encode payload(user, purpose, options), secret, ALGORITHM
+      JWT.encode(
+        payload(user, purpose, options),
+        SECRETS[purpose],
+        ALGORITHMS[purpose],
+        encode_options(purpose)
+      )
     end
 
     def decode(token, purpose)
@@ -30,7 +50,7 @@ module InstAuth::UserToken
       #       currently nested in the authz code and make the authz code the cahce key.
       # TODO: Add iss and aud verification
 
-      decoded_token = JWT.decode(token, secret, true).first
+      decoded_token = JWT.decode(token, SECRETS[purpose], true).first
       token_purpose = decoded_token["#{CLAIM_PREFIX}/purpose"]
 
       if token_purpose != purpose
@@ -56,10 +76,10 @@ module InstAuth::UserToken
         scopes: [],
         "#{CLAIM_PREFIX}/purpose" => purpose,
         "#{CLAIM_PREFIX}/clientId" => options[:client_id]
-      }.merge(purpose_claims(purpose)).compact
+      }.merge(purpose_claims(purpose, user))
     end
 
-    def purpose_claims(purpose)
+    def purpose_claims(purpose, user)
       {
         PURPOSES.authorization_code => {
           jti: SecureRandom.uuid,
@@ -67,12 +87,33 @@ module InstAuth::UserToken
         },
         PURPOSES.access_token => {
           exp: Time.now.to_i + ACCESS_TOKEN_TTL
-        }
+        },
+        # TODO: Scope these down by the granted scopes
+        PURPOSES.id_token => user.as_json.slice(
+          "sub",
+          "name",
+          "given_name",
+          "family_name",
+          "middle_name",
+          "nickname",
+          "preferred_username",
+          "profile",
+          "picture",
+          "website",
+          "birthdate",
+          "zoneinfo",
+          "locale",
+          "tenant_id"
+        )
       }[purpose]
     end
 
-    def secret
-      ENV['SYMMETRIC_TOKEN_SECRET']
+    def encode_options(purpose)
+      {
+        PURPOSES.id_token => {
+          kid: KEY_SET.jwk[:kid]
+        }
+      }[purpose] || {}
     end
   end
 end
