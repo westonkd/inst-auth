@@ -33,7 +33,12 @@ module Connections::Callback
   def original_callback_url
     # TODO: We already check the redirect URI is valid before writing it to the state token
     # Can I think of any vectors that could take advantage of leaving out an additional check here?
-    callback_strategy.redirect_uri(user, original_params["client_state"], original_params["client_redirecet_uri"])
+    callback_strategy.redirect_uri(
+      user,
+      original_params["client_state"],
+      original_params["client_redirecet_uri"],
+      original_params["client_id"]
+    )
   end
 
   def decoded_state

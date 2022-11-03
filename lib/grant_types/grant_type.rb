@@ -20,17 +20,11 @@ class GrantTypes::GrantType
   end
 
   def valid_request?
-    puts "==>", validators
     validators.all? { |v| send(v) }
   end
 
-  def access_token
-  end
-
-  def refresh_token
-  end
-
-  def id_token
+  def tokens
+    {}
   end
 
   protected

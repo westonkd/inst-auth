@@ -4,7 +4,9 @@ module InstAuth::UserToken
   # TODO: Make a more general JWT module/class
 
   ALGORITHM = 'HS256'
-  AUTHZ_CODE_TTL = 1
+  AUTHZ_CODE_TTL = 60.seconds
+  ACCESS_TOKEN_TTL = 60.minutes
+
   CLAIM_PREFIX = "https://id.instructure.docker"
 
   PURPOSES = OpenStruct.new(
@@ -15,10 +17,10 @@ module InstAuth::UserToken
   class TokenPurposeMismatchError < StandardError; end
 
   class << self
-    def for_user(user, purpose)
+    def for_user(user, purpose, options = {})
       return nil unless user
 
-      JWT.encode payload(user, purpose), secret, ALGORITHM
+      JWT.encode payload(user, purpose, options), secret, ALGORITHM
     end
 
     def decode(token, purpose)
@@ -35,12 +37,12 @@ module InstAuth::UserToken
         raise TokenPurposeMismatchError, "Expected token to have purpose #{prupose}, but had #{token_purpose}" 
       end
 
-      decoded_token
+      decoded_token.with_indifferent_access
     end
 
     private
 
-    def payload(user, purpose)
+    def payload(user, purpose, options)
       tenant = user.tenant
 
       {
@@ -52,8 +54,9 @@ module InstAuth::UserToken
         # endpoint that each exposes. Clients can then set scopes in the
         # authz/token requests and have them added here.
         scopes: [],
-        "#{CLAIM_PREFIX}/purpose" => purpose
-      }.merge(purpose_claims(purpose))
+        "#{CLAIM_PREFIX}/purpose" => purpose,
+        "#{CLAIM_PREFIX}/clientId" => options[:client_id]
+      }.merge(purpose_claims(purpose)).compact
     end
 
     def purpose_claims(purpose)
@@ -61,6 +64,9 @@ module InstAuth::UserToken
         PURPOSES.authorization_code => {
           jti: SecureRandom.uuid,
           exp: Time.now.to_i + AUTHZ_CODE_TTL.to_i
+        },
+        PURPOSES.access_token => {
+          exp: Time.now.to_i + ACCESS_TOKEN_TTL
         }
       }[purpose]
     end

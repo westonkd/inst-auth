@@ -7,6 +7,10 @@ Rails.application.routes.draw do
     post "/token", action: :token
   end
 
+  scope(controller: :well_known) do
+    get "/.well-known/jwks", action: :jwks
+  end
+
   scope(controller: 'connections/authorization') do
     get "/connections/:identifier/authorize", action: :authorize, as: "connections_authorization"
     get "/connections/callback", action: :callback

@@ -75,6 +75,6 @@ end
 
 gem "oauth2", "~> 2.0"
 
-gem "jwt", "~> 2.5"
+gem "jwt", git: "https://github.com/jwt/ruby-jwt", ref: "b478722acee3a1bf141499b0359efa41679a5c09"
 
 gem "httparty", "~> 0.20.0"

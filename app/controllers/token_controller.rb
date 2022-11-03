@@ -7,7 +7,7 @@ class TokenController < ApplicationController
     # TODO: A standards-compliant error response
     return head 401 unless grant_type.valid_request?
 
-    render json: {}
+    render json: grant_type.tokens
   end
 
   private
