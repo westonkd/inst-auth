@@ -1,5 +1,5 @@
 module ResponseTypes
-  class AuthorizationCode
+  class Code
     class << self
       def authorization_endpoint(connection, parameters: {})
         ResponseType.client_for_connection(connection).auth_code.authorize_url(parameters)

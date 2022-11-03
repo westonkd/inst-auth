@@ -7,9 +7,10 @@ module ResponseTypes
     class << self
       def for(response_type)
         {
-          TYPES.authorization_code => AuthorizationCode,
+          # TODO: Just use 'code' for consistency
+          TYPES.authorization_code => Code,
           # TODO: store as a constant
-          'code' => AuthorizationCode
+          'code' => Code
         }.with_indifferent_access[response_type] || (raise ResponseTypeNotFound, "Could not find responste type for #{startegy_type}")
       end
 
