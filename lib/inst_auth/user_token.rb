@@ -76,10 +76,10 @@ module InstAuth::UserToken
         scopes: [],
         "#{CLAIM_PREFIX}/purpose" => purpose,
         "#{CLAIM_PREFIX}/clientId" => options[:client_id]
-      }.merge(purpose_claims(purpose, user))
+      }.merge(purpose_claims(purpose, user, options))
     end
 
-    def purpose_claims(purpose, user)
+    def purpose_claims(purpose, user, options)
       {
         PURPOSES.authorization_code => {
           jti: SecureRandom.uuid,
@@ -104,7 +104,7 @@ module InstAuth::UserToken
           "zoneinfo",
           "locale",
           "tenant_id"
-        )
+        ).merge(aud: options[:client_id])
       }[purpose]
     end
 

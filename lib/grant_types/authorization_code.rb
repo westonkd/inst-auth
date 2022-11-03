@@ -49,7 +49,8 @@ module GrantTypes
 
       InstAuth::UserToken.for_user(
         @user,
-        InstAuth::UserToken::PURPOSES.id_token
+        InstAuth::UserToken::PURPOSES.id_token,
+        client_id: @token_params[:client_id]
       )
     end
 
