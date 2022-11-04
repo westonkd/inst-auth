@@ -1,16 +1,25 @@
 # InstAuth
 
+## Current Data Model
+This will need some tweaking, but is a decent start: https://dbdiagram.io/d/636539c5c9abfc6111705ec1
+
 ## Central Ideas
-- Clients only do OAuth2/OIDC with InstAuth
-- InstAuth supports "connections" to authn services and performs the proper authn exchange for whichever connection the user selects. We could have some generic like "OIDC Provier" and "SAML Provider", but also have specific connections available like "Google."
-- Canvas is the first "connection" supported in InstAuth. Connections can then be moved one at a time from Canvas into InstAuth.
-- Each service backing a connection exposes a standard ".well-known" openid-configuration endpoint for discovery of scopes, etc.
-- Callbacks goes to a regional tenant, which redirect to a specific tenant based on JWT state contents. This reduces the number of callback URLs we need to manage in providers.
-- Each tenant allows users to create "Applications," which are credential sets. "Applications" let users select grant types (auth code, pkce, client credentials, etc)
-- Each tenant has a JWKS key set to allow verification of id_tokens they issue
-- Tokens issued by InstAuth are signed (and encrypted) with a secret shared with API Gateway
 
+*TL;DR* - InstAuth speaks OAuth2 + OIDC with clients. It's an abstractiont that knows how to auth with
+a large variety of established (or custom) auth providers. These providers are configurable by the
+InstAuth tenant owners.
 
-## Notable TODOs
-- Use cache key for client-facing authorization code instead of JWT
-- Fix the terrible naming of modules/classes that 
+- Each region has a regional tenant. Each regional tenant has many "normal" tenants
+  - Regional tenant host: `us-east-1.id.instructure.docker`
+  - Normal tenant: `hogwarts.us-east-1.id.instructure`
+- Each tenant can have many Connections. Connections contain Authn/Authz provider client information
+  (Like Google, Microsoft, custom OIDC provider, whatever)
+- The first connection that we should enable is the "Canvas LMS" connection pointing to the tenant's
+  associated Canvas host
+- Connections have many Applications. Applications are like developer keys in Canvas, but customizable
+  (example: They allow selecting a grant_type)
+- End clients (like new quizzes) do OIDC with InstAuth. InstAuth, in turn, does OIDC/whatever with the
+  user selected Connection, provisions a user (or finds them), and generates an internal InstAuth access_token and id_token (JWTs)
+- InstAuth access_tokens are opaque to clients. They are intended to be consumed by an API Gateway
+- InstAuth id_tokens are signed with an InstAuth private key and are intended to be consumed by clients
+- InstAuth exposes a JWK keyset per tenant
