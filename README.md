@@ -4,7 +4,6 @@
 This will need some tweaking, but is a decent start: https://dbdiagram.io/d/636539c5c9abfc6111705ec1
 
 ## Central Ideas
-
 *TL;DR* - InstAuth speaks OAuth2 + OIDC with clients. It's an abstractiont that knows how to auth with
 a large variety of established (or custom) auth providers. These providers are configurable by the
 InstAuth tenant owners.
@@ -23,3 +22,7 @@ InstAuth tenant owners.
 - InstAuth access_tokens are opaque to clients. They are intended to be consumed by an API Gateway
 - InstAuth id_tokens are signed with an InstAuth private key and are intended to be consumed by clients
 - InstAuth exposes a JWK keyset per tenant
+
+## Swimlane Diagram of Request Flow
+https://swimlanes.io/d/DONLGfdtO
+<img src="https://static.swimlanes.io/0c2c094ccac963a28252fd09f58030d5.png">
