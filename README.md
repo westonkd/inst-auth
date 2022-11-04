@@ -3,6 +3,9 @@
 ## Current Data Model
 This will need some tweaking, but is a decent start: https://dbdiagram.io/d/636539c5c9abfc6111705ec1
 
+## Quick(ish) Demo
+https://www.youtube.com/watch?v=xN60ia1Y7l0
+
 ## Central Ideas
 *TL;DR* - InstAuth speaks OAuth2 + OIDC with clients. It's an abstractiont that knows how to auth with
 a large variety of established (or custom) auth providers. These providers are configurable by the
