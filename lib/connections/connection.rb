@@ -3,8 +3,10 @@ class Connections::Connection
 
   class << self
     def for_connection(connection)
+      # TODO: This mapping should not live in code
       connection_map = {
-        Connections::Canvas::IDENTIFIER => Connections::Canvas
+        Connections::Canvas::IDENTIFIER => Connections::Canvas,
+        'google' => Connections::OpenIdConnect
       }
 
       klass = connection_map[connection.identifier]
@@ -62,17 +64,27 @@ class Connections::Connection
 
   def redirect_uri
     Rails.application.routes.url_helpers.connections_callback_url(
-      host: @connection.tenant.regional_tenant.tenant_hosts.first.host
+      host: @connection.callback_host || @connection.tenant.regional_tenant.tenant_hosts.first.host
     )
   end
 
+  def scope
+    @connection.scopes_supported.join(" ")
+  end
+
   def authorization_parameters(client_params)
-    { state: state(client_params), redirect_uri: }
+    {
+      state: state(client_params),
+      redirect_uri:,
+      scope:
+    }
   end
 
   def client_id
+    @connection.client_id
   end
 
   def client_secret
+    @conection.client_secret
   end
 end

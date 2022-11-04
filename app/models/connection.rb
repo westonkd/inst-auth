@@ -22,12 +22,20 @@ class Connection < ApplicationRecord
 
   belongs_to :tenant
 
+  # General TODOs:
+  #   - We should support configuration of a Connection via
+  #     a provider's oidc endpoing (example: https://accounts.google.com/.well-known/openid-configuration)
+
   def client_id
     ENV["#{env_key}_CLIENT_ID"]
   end
 
   def client_secret
     ENV["#{env_key}_CLIENT_SECRET"]
+  end
+
+  def user_identifier(user_uuid)
+    "#{identifier}|#{user_uuid}"
   end
 
   private

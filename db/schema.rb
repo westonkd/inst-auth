@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_02_180547) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_04_150526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,6 +56,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_180547) do
     t.bigint "tenant_id"
     t.string "identifier"
     t.string "authorization_host"
+    t.string "callback_host"
     t.index ["identifier"], name: "index_connections_on_identifier", unique: true
     t.index ["issuer", "authorization_endpoint"], name: "index_connections_on_issuer_and_authorization_endpoint", unique: true
     t.index ["tenant_id"], name: "index_connections_on_tenant_id"

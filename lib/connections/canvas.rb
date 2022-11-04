@@ -8,16 +8,6 @@ module Connections
       user_from_info(userinfo(token))
     end
 
-    protected
-
-    def client_id
-      ENV['CANVAS_CLIENT_ID']
-    end
-
-    def client_secret
-      ENV['CANVAS_CLIENT_SECRET']
-    end
-
     private
 
     def make_request(path, token)
@@ -28,7 +18,12 @@ module Connections
     end
 
     def user_from_info(userinfo)
-      user = @connection.tenant.users.find_or_initialize_by(sub: "#{@connection.identifier}|#{userinfo[:uuid]}")
+      # TODO: Be a little smarter about looking up users. If
+      # a user already exist with the same email, probably join
+      # them.
+      user = @connection.tenant.users.find_or_initialize_by(
+        sub: @connection.user_identifier(userinfo[:uuid])
+      )
 
       user.update!(
         name: userinfo[:name],
