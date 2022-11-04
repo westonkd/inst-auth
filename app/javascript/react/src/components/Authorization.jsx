@@ -59,6 +59,7 @@ const Authorization = ({
                     color="secondary"
                     display="block"
                     type="submit"
+                    margin="none none small none"
                     onClick={() => {
                       window.location.replace(
                         `${connection.authorization_url}?client_state=${client_state}&client_id=${client_id}&client_redirect_uri=${client_redirect_uri}&client_response_type=${client_response_type}`
