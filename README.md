@@ -11,7 +11,7 @@ InstAuth tenant owners.
 
 - Each region has a regional tenant. Each regional tenant has many "normal" tenants
   - Regional tenant host: `us-east-1.id.instructure.docker`
-  - Normal tenant: `hogwarts.us-east-1.id.instructure`
+  - Normal tenant: `hogwarts.us-east-1.id.instructure.docker`
 - Each tenant can have many Connections. Connections contain Authn/Authz provider client information
   (Like Google, Microsoft, custom OIDC provider, whatever)
 - The first connection that we should enable is the "Canvas LMS" connection pointing to the tenant's
